@@ -1,0 +1,13 @@
+[
+    {
+        "name" : "Deliver Steel",
+        "type" : "delivery",
+
+        "item" : "steel_plate",
+        "number_of_items" : [20, 100],
+        "upfront_multiplier" : 0.05,
+        "reward_multiplier" : 0.25,
+        "fail_multiplier" : 1.8,
+        "base_difficulty" : 1
+    }
+]

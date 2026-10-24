@@ -1,0 +1,129 @@
+[
+    {
+        "name" : "Demo",
+        "size" : [1,1],
+        "health" : 0,
+        "mass" : 0,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : false,
+        "special_type" : "None",
+        "description" : "Entirely non-existant tile, like it it literally doesn't have a texture or anything I dont even know why it exists tbh (why did I make it????). This description shouldn't be visble anywhere in game, if it is something is WRONG."
+    },
+    {
+        "name" : "None",
+        "size" : [1,1],
+        "health" : 0,
+        "mass" : 0,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : false,
+        "special_type" : "None",
+        "description" : "A tile of literal nothingness. Just Space!"
+    },
+    {
+        "name" : "Floor",
+        "size" : [1,1],
+        "health" : 5,
+        "mass" : 1,
+        "passable" : true,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "None",
+        "description" : "An empty floor tile, mostly useless until real crew are added."
+    },
+    {
+        "name" : "Vent",
+        "size" : [1,1],
+        "health" : 5,
+        "mass" : 1,
+        "passable" : true,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "None",
+        "description" : "A floor tile that is used to provide atmosphere to a room. Currently does nothing though!"
+    },
+    {
+        "name" : "Pillar",
+        "size" : [1,1],
+        "health" : 50,
+        "mass" : 5,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "None",
+        "description" : "A solid chunk of wall."
+    },
+    {
+        "name" : "Engine",
+        "size" : [2,1],
+        "health" : 25,
+        "mass" : 32,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "Engine",
+        "description" : "Go vroom vroom.",
+        "engine_power_bonus" : 50,
+        "fuel_consumption" : 2
+    },
+    {
+        "name" : "Battery",
+        "size" : [2,1],
+        "health" : 30,
+        "mass" : 50,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "None",
+        "description" : "Is currently just another random decorative tile, serves no real purpose."
+    },
+    {
+        "name" : "Reactor",
+        "size" : [3,3],
+        "health" : 60,
+        "mass" : 120,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "None",
+        "description" : "Also just a usless deco rn, should give a purpose at some point."
+    },
+    {
+        "name" : "Storage Box",
+        "size" : [1,1],
+        "health" : 15,
+        "mass" : 4,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "Storage",
+        "description" : "Used to store cargo.",
+        "storage_space" : 20
+    },
+    {
+        "name" : "Fuel Cell",
+        "size" : [2,1],
+        "health" : 30,
+        "mass" : 24,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "Fuel",
+        "description" : "Used to store fuel to be used by your engines.",
+        "fuel_capacity" : 50
+    },
+    {
+        "name" : "Lil Thruster",
+        "size" : [2,1],
+        "health" : 25,
+        "mass" : 32,
+        "passable" : false,
+        "interactable" : false,
+        "placeable" : true,
+        "special_type" : "Thruster",
+        "description" : "Used to increase the maximum mass of your ship.",
+        "engine_power_used" : 10,
+        "mass_bonus" : 150
+    }
+]

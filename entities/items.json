@@ -1,0 +1,7 @@
+{
+    "steel_plate" : {
+        "animated" : false,
+        "credit_value" : 10,
+        "texture" : "assets/textures/items/static/steel_plate.png"
+    }
+}

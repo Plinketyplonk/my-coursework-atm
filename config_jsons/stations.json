@@ -1,0 +1,33 @@
+[
+    {
+        "name" : "Frontier Outpost",
+        "shipyard" : false,
+        "repairs" : false,
+        "crew" : false,
+        "size" : 0
+    },
+
+    {
+        "name" : "Established Outpost",
+        "shipyard" : false,
+        "repairs" : true,
+        "crew" : true,
+        "size" : 1
+    },
+
+    {
+        "name" : "Space Station",
+        "shipyard" : false,
+        "repairs" : true,
+        "crew" : true,
+        "size" : 2
+    },
+
+    {
+        "name" : "Space Port",
+        "shipyard" : true,
+        "repairs" : true,
+        "crew" : true,
+        "size" : 4
+    }
+]
