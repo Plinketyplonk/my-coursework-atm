@@ -70,8 +70,8 @@ class FuelTile(Tile):
         super().__init__(name, size, health, mass, passable, interactable, placeable, description)
 
 class StorageTile(Tile):
-    def __init__(self, name, size, health, mass, passable, interactable, placeable, description, storage_space):
-        self.fuel_storage = storage_space # how much stuff the tile can store (increases limit)
+    def __init__(self, name, size, health, mass, passable, interactable, placeable, description, bulk_storage):
+        self.bulk_storage = bulk_storage # how much space tile has to store stuff (increases limit)
 
         super().__init__(name, size, health, mass, passable, interactable, placeable, description)
 
@@ -116,22 +116,29 @@ thrust_limit = 0 # changed via engines, aka engine power?
 thrust_used = 0 # thrusters use thrust :o
 
 fuel_limit = 0 # add fuel tanks to increase duh
-fuel_level = 0 # fuel values are all in Litres
+fuel_level = 0 # fuel values are all in pseudo-Litres
+
+storage_bulk_limit = 0 # storage containers give you more space to stick stuff
+storage_bulk_level = 0 # having items on board takes up space
 
 multi_tile_kinds = []
 engine_tile_kinds = []
 thruster_tile_kinds = []
 fuel_tile_kinds = []
+storage_tile_kinds = []
 for tile_kind in tile_kinds: # for when u remove a tile/component that spans across multiple tiles
+    match type(tile_kinds[tile_kind]).__name__:
+        case "EngineTile":
+            engine_tile_kinds.append(tile_kind)
 
-    if type(tile_kinds[tile_kind]).__name__ == "EngineTile":
-        engine_tile_kinds.append(tile_kind)
+        case "ThrusterTile":
+            thruster_tile_kinds.append(tile_kind)
 
-    if type(tile_kinds[tile_kind]).__name__ == "ThrusterTile":
-        thruster_tile_kinds.append(tile_kind)
-
-    if type(tile_kinds[tile_kind]).__name__ == "FuelTile":
-        fuel_tile_kinds.append(tile_kind)
+        case "FuelTile":
+            fuel_tile_kinds.append(tile_kind)
+        
+        case "StorageTile":
+            storage_tile_kinds.append(tile_kind)
 
     if tile_kinds[tile_kind].size[0] > 1 or tile_kinds[tile_kind].size[1] > 1:
         multi_tile_kinds.append(tile_kind)
@@ -145,6 +152,8 @@ tile_kind_map = np.full(grid_map_size, 1, dtype="i") # map for storing what kind
 
 tile_origin_map_size = (grid_map_size[0], grid_map_size[1], 2) # dim 0 and 1 are used to mark the tiles actual grid coords, the 2nd dim is 2 items long and stores the origin x and y
 tile_origin_map = np.full(tile_origin_map_size, -1, dtype="i")
+
+tile_storage_map = [[[] for _ in range(grid_map_size[1])] for _ in range(grid_map_size[0])] # a list to put ID numbers for items stored in a tile is assigned to each tile
 
 tile_totals = np.full(len(tile_kinds), 0, dtype="i") # every index refers to its respective tile, so like index 1 refers to the number of floor tiles - index 0 is unused because counting the number of empty tiles is useless
 
@@ -202,7 +211,7 @@ def select_tile(starting_x, tile_padding, mouse_pos): # from the tile carousel
 
 
 def multi_tile_replace(coord): # also works to just replace single tiles i think lmao
-    global tile_origin_map, tile_kind_map, thrust_limit, thrust_used, mass_limit, fuel_limit
+    global tile_origin_map, tile_kind_map, thrust_limit, thrust_used, mass_limit, fuel_limit, storage_bulk_limit
 
     targets_tile_kind = tile_kind_map[coord[0], coord[1]]
 
@@ -212,12 +221,15 @@ def multi_tile_replace(coord): # also works to just replace single tiles i think
     if targets_tile_kind in engine_tile_kinds:
             thrust_limit -= tile_kinds[targets_tile_kind].thrust_limit_increase # decrease the limit because removed engine
     
-    if targets_tile_kind in thruster_tile_kinds:
+    elif targets_tile_kind in thruster_tile_kinds:
         thrust_used -= tile_kinds[targets_tile_kind].thrust_consumption
         mass_limit -= tile_kinds[targets_tile_kind].mass_limit_increase # decrease the limit after removing a thruster
     
-    if targets_tile_kind in fuel_tile_kinds:
+    elif targets_tile_kind in fuel_tile_kinds:
         fuel_limit -= tile_kinds[targets_tile_kind].fuel_storage
+    
+    elif targets_tile_kind in storage_tile_kinds:
+        storage_bulk_limit -= tile_kinds[targets_tile_kind].bulk_storage
 
 
     mt_size_x, mt_size_y = tile_kinds[targets_tile_kind].size
@@ -235,7 +247,7 @@ def multi_tile_replace(coord): # also works to just replace single tiles i think
 
 def place_tile(mouse_pos, camera): # numpy heavy stuff :(
     # forewarning that this is the most unreadable thing i have ever made
-    global selected_tile, tile_kind_map, tile_origin_map, ship_mass, mass_limit, thrust_limit, thrust_used, fuel_limit
+    global selected_tile, tile_kind_map, tile_origin_map, ship_mass, mass_limit, thrust_limit, thrust_used, fuel_limit, storage_bulk_limit
 
     origin = (int((mouse_pos[0] - camera.pos[0]) // 64), int((mouse_pos[1] - camera.pos[1]) // 64))
 
@@ -280,12 +292,15 @@ def place_tile(mouse_pos, camera): # numpy heavy stuff :(
     if selected_tile in engine_tile_kinds:
         thrust_limit += tile_kinds[selected_tile].thrust_limit_increase # increase the limit after placing an engine
     
-    if selected_tile in thruster_tile_kinds:
+    elif selected_tile in thruster_tile_kinds:
         thrust_used += tile_kinds[selected_tile].thrust_consumption
         mass_limit += tile_kinds[selected_tile].mass_limit_increase # increase the limit after placing a thruster
 
-    if selected_tile in fuel_tile_kinds:
+    elif selected_tile in fuel_tile_kinds:
         fuel_limit += tile_kinds[selected_tile].fuel_storage
+    
+    elif selected_tile in storage_tile_kinds:
+        storage_bulk_limit += tile_kinds[selected_tile].bulk_storage
     
     if not demo_mode:
         tile_totals[selected_tile] += 1

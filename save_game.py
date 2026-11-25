@@ -81,7 +81,7 @@ def log_crash(crash_exception, save_name): # only used on a crash obvs
         file_path = f"saves/{save_name}/crash.txt"
         with open(resource_path(file_path), "wt") as f:
             try:
-                f.write("This save is likely to be corrupted, I'd recomend reverting to an older save/autosave. Mb for the sloppy coding ig lol\n\nCrash caused by:\n")
+                f.write("This save is likely to be corrupted, I'd recomend reverting to an older save/autosave. Mb for the sloppy (HUMAN SLOP!!!!!) coding ig lol\n\nCrash caused by:\n")
                 f.write(crash_exception)
             except:
                 print('Crash save error (OH NO)')

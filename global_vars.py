@@ -18,5 +18,6 @@ game_date = [1, 1, 2600]
 # misc stuff
 
 camera_shake = 0
+camera_shake_direction = 4 # counts from 3 to -4, only used for the sign (+ or -)
 
 # --

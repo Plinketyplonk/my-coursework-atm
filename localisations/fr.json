@@ -1,0 +1,49 @@
+{
+	"#Tiles/Demo" : "Démo",
+	"#Tiles/Demo_desc" : "Tuile totalement inexistante, genre elle n'a littéralement aucune texture ou quoi que ce soit. En vrai je sais même pas pourquoi elle existe, ça aurait été sympa si j'avais documenté ça (pourquoi j'ai fait ça ???). Cette description ne devrait être visible nulle part en jeu, si c'est le cas, c'est qu'il y a un GROS SOUCI.",
+	"#Tiles/None" : "Aucun",
+	"#Tiles/None_desc" : "Une tuile de vide absolu. Juste l'Espace !",
+	"#Tiles/Floor" : "Dalles de sol",
+	"#Tiles/Floor_desc" : "Une tuile de sol vide, globalement inutile tant que le vrai équipage n'est pas ajouté.",
+	"#Tiles/Vent" : "Grille d'aération sol",
+	"#Tiles/Vent_desc" : "Une tuile de sol utilisée pour alimenter une pièce en atmosphère. Bon pour l'instant elle ne fait rien du tout !",
+	"#Tiles/Pillar" : "Mur",
+	"#Tiles/Pillar_desc" : "Un bon gros morceau de mur solide.",
+	"#Tiles/Engine" : "Moteur",
+	"#Tiles/Engine_desc" : "Fait vroom vroom.",
+	"#Tiles/Battery" : "Batterie",
+	"#Tiles/Battery_desc" : "Pour l'instant c'est juste une autre tuile décorative random, ça ne sert à rien.",
+	"#Tiles/Reactor" : "Petit réacteur",
+	"#Tiles/Reactor_desc" : "Aussi juste une déco inutile pour le moment, faudrait lui donner une utilité à un moment donné.",
+	"#Tiles/Storage_Box" : "Caisse de stockage",
+	"#Tiles/Storage_Box_desc" : "Utilisée pour stocker la cargaison.",
+	"#Tiles/Fuel_Cell" : "Pile à combustible",
+	"#Tiles/Fuel_Cell_desc" : "Utilisée pour stocker le carburant destiné à vos moteurs.",
+	"#Tiles/Lil_Thruster" : "Petit propulseur",
+	"#Tiles/Lil_Thruster_desc" : "Utilisé pour augmenter la masse maximale de votre vaisseau.",
+
+	"#Items/steel_plate_1" : "Plaque d'acier",
+
+	"#Galaxy_Map_Info/kind" : "Type : ",
+	"#Galaxy_Map_Info/na_fuel" : "Carburant : N/A",
+	"#Galaxy_Map_Info/fuel" : "Carburant :",
+	"#Galaxy_Map_Info/contract_count" : "Nombre de contrats :",
+	"#Galaxy_Map_Info/threat_level" : "Niveau de menace : ",
+
+	"#Station_Names/frontier_outpost" : "Avant-poste frontalier",
+	"#Station_Names/established_outpost" : "Avant-poste frontalier",
+	"#Station_Names/space_station" : "Station spatiale",
+	"#Station_Names/space_port" : "Port spatial",
+
+	"#Contracts_Names/delivery_steel" : "Livrer de l'acier",
+
+	"#Ticker/galaxy_map_fuel" : "Pas assez de carburant !",
+	"#Ticker/galaxy_map_thrust" : "Pas assez de propulseurs !",
+	"#Ticker/galaxy_map_engine" : "Pas assez de puissance moteur !",
+	"#Ticker/galaxy_map_far" : "Station trop lointaine !",
+
+	"#Ticker/main_save" : "Partie sauvegardée !",
+	"#Ticker/main_load_good" : "Partie chargée !",
+	"#Ticker/main_load_bad" : "Échec du chargement, aucun fichier trouvé.",
+	"#" : ""
+}

@@ -1,0 +1,49 @@
+{
+	"#Tiles/Demo" : "Demo",
+	"#Tiles/Demo_desc" : "Entirely non-existant tile, like it it literally doesn't have a texture or anything I dont even know why it exists tbh wouldve been nice if i documented this (why did I make it????). This description shouldn't be visble anywhere in game, if it is something is WRONG.",
+	"#Tiles/None" : "None",
+	"#Tiles/None_desc" : "A tile of literal nothingness. Just Space!",
+	"#Tiles/Floor" : "Floor Tiles",
+	"#Tiles/Floor_desc" : "An empty floor tile, mostly useless until real crew are added.",
+	"#Tiles/Vent" : "Floor Vent",
+	"#Tiles/Vent_desc" : "A floor tile that is used to provide atmosphere to a room. Currently does nothing though!",
+	"#Tiles/Pillar" : "Wall",
+	"#Tiles/Pillar_desc" : "A solid chunk of wall.",
+	"#Tiles/Engine" : "Engine",
+	"#Tiles/Engine_desc" : "Go vroom vroom.",
+	"#Tiles/Battery" : "Battery",
+	"#Tiles/Battery_desc" : "Is currently just another random decorative tile, serves no real purpose.",
+	"#Tiles/Reactor" : "Small Reactor",
+	"#Tiles/Reactor_desc" : "Also just a usless deco rn, should give a purpose at some point.",
+	"#Tiles/Storage_Box" : "Storage Box",
+	"#Tiles/Storage_Box_desc" : "Used to store cargo.",
+	"#Tiles/Fuel_Cell" : "Fuel Cell",
+	"#Tiles/Fuel_Cell_desc" : "Used to store fuel to be used by your engines.",
+	"#Tiles/Lil_Thruster" : "Small Thruster",
+	"#Tiles/Lil_Thruster_desc" : "Used to increase the maximum mass of your ship.",
+
+	"#Items/steel_plate_1" : "Steel Plate",
+
+	"#Galaxy_Map_Info/kind" : "Kind: ",
+	"#Galaxy_Map_Info/na_fuel" : "Fuel: N/A",
+	"#Galaxy_Map_Info/fuel" : "Fuel:",
+	"#Galaxy_Map_Info/contract_count" : "Contract Count:",
+	"#Galaxy_Map_Info/threat_level" :"Threat Level: ",
+
+	"#Station_Names/frontier_outpost" : "Frontier Outpost",
+	"#Station_Names/established_outpost" : "Frontier Outpost",
+	"#Station_Names/space_station" : "Space Station",
+	"#Station_Names/space_port" : "Space Port",
+
+	"#Contracts_Names/delivery_steel" : "Deliver Steel",
+
+	"#Ticker/galaxy_map_fuel" : "Not enough fuel!",
+	"#Ticker/galaxy_map_thrust" : "Not enough thrusters!",
+	"#Ticker/galaxy_map_engine" : "Not enough engine power!",
+	"#Ticker/galaxy_map_far" : "Station too far!",
+
+	"#Ticker/main_save" : "Game saved!",
+	"#Ticker/main_load_good" : "Game loaded!",
+	"#Ticker/main_load_bad" : "Load failed, no file found.",
+	"#" : ""
+}

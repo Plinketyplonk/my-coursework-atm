@@ -26,14 +26,16 @@ class Base_Contract:
 
 
     def accept_contract(self):
-        self.accepted = True
-        global_vars.balance += self.strt_bonus
+        if not self.accepted:
+            self.accepted = True
+            global_vars.balance += self.strt_bonus
 
 
 
     def complete_contract(self):
-        self.accepted = True
-        global_vars.balance += self.finish_reward
+        if self.accepted:
+            self.accepted = True
+            global_vars.balance += self.finish_reward
 
 
 

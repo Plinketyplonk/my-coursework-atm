@@ -6,6 +6,7 @@ And also handle movement checks
 import galaxy.stations, random, render, math, building, sounds, global_vars
 import pygame as p
 import numpy as np
+from localise import l10n_convert
 
 current_station = 0 # where the player is rn
 
@@ -129,7 +130,7 @@ class Generate_New_Map:
 
 
 
-def fetch_hovered_connection(mouse_pos, camera):
+def fetch_hovered_connection(mouse_pos, camera): 
     mouse_pos = (mouse_pos[0] - galaxy.stations.Station.pos_offset[0] - camera.pos[0], mouse_pos[1] - galaxy.stations.Station.pos_offset[1] - camera.pos[1]) # adjust the mouse pos by the offset
     ps_d = galaxy.stations.Station.pos_distancing
 
@@ -151,25 +152,24 @@ def calc_fuel_needed(station_id):
 
 
 
-def gather_stats_for_info(mouse_pos, camera):
-    station_id = fetch_hovered_connection(mouse_pos, camera)
+def gather_stats_for_info(station_id):
 
     stn_obj = galaxy.stations.stations[station_id]
 
     pos = stn_obj.pos
     thrt_lvl = stn_obj.threat_level
-    kind = f"Kind: {galaxy.stations.station_kinds[stn_obj.kind]['name']}"
+    kind = l10n_convert(str(galaxy.stations.station_kinds[stn_obj.kind]['name']))
 
     if station_id == current_station or not station_id in galaxy.stations.station_links[current_station]:
-        fuel_needed = "Fuel: N/A"
+        fuel_needed = l10n_convert("#Galaxy_Map_Info/na_fuel")
     else:
         fuel_needed = calc_fuel_needed(station_id)
         if fuel_needed != 0:
-            fuel_needed = f"Fuel: {fuel_needed}"
+            fuel_needed = f"{l10n_convert('#Galaxy_Map_Info/fuel')} {fuel_needed}"
         else:
-            fuel_needed = "Fuel: N/A"
+            fuel_needed = l10n_convert("#Galaxy_Map_Info/na_fuel")
 
-    contract_count = f"Contract Count: {len(stn_obj.attached_contracts)}"
+    contract_count = f"{l10n_convert('#Galaxy_Map_Info/contract_count')} {len(stn_obj.attached_contracts)}"
 
     name = stn_obj.name
 
@@ -180,7 +180,6 @@ def gather_stats_for_info(mouse_pos, camera):
 def jump_to_new_station(mouse_pos, camera):
     global current_station
 
-    print(mouse_pos)
     if p.Rect((1880,10),(30,30)).collidepoint(mouse_pos):
         return False, -1 # the player obvs just pressed the button so like don't make them try jump?
 

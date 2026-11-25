@@ -13,7 +13,13 @@ station_kinds = json.load(open(resource_path("config_jsons/stations.json")))
 with open(resource_path("config_jsons/station_names.txt")) as f:
     station_names = f.readlines()
     for i in range(len(station_names)):
-        station_names[i] = station_names[i][0:-1] + " " # take the new line character off
+        station_names[i] = station_names[i][0:-1] + " " # take the new line character off other its the [] character (UGLY)
+
+station_menu_open = False
+
+stations = []
+station_links = {}
+
 
 class Station:
     pos_offset = (300, 200)
@@ -42,14 +48,10 @@ class Station:
 
         self.threat_level = (0.5 * (2 * sin(x * 100/Station.pos_distancing) + 0.03 * x * 100/Station.pos_distancing) + (2 * sin(y * Station.pos_distancing/100) + 0.01 * y * Station.pos_distancing/100) + randint(-20, 20)) * Station.threat_level_difficulty # not how dangerous the station itself is, but rather used to average between two stations for the links threat level
         
-        self.threat_level = min(100, max(10, self.threat_level)) # max level of 100, and a min of 10 (mainly so the debug colours work rn lol)
+        self.threat_level = min(100, max(10, self.threat_level)) # max level of 100, and a min of 10
 
         self.pos = (x + Station.pos_offset[0], y + Station.pos_offset[1]) # the additions are an offset to centre the map in the UI ;)
 
-
-
-stations = []
-station_links = {}
 
 
 def create_stations(num_columns, num_rows): # used when a new save is started, creates every station in the 2d grid
@@ -101,4 +103,7 @@ def create_stations(num_columns, num_rows): # used when a new save is started, c
                 stations[station_id].attached_contracts.append( # assign the contract ID to the station ID to link em
                     galaxy.contracts.create_new_contract(station_id, len(stations)) # create the contract and return its ID
                     )
-    
+
+def toggle_station_menu(): # used by a UI button :thumbs_up:
+    global station_menu_open
+    station_menu_open = not station_menu_open

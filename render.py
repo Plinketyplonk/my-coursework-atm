@@ -13,21 +13,24 @@ loading_screen = p.display.set_mode((200,200)) # used so imports can load themse
 import building, sounds, pause_menu, main_menu, entities, global_vars
 import galaxy.stations as glxy_stns
 import galaxy.galaxy_map as glxy_map
+import galaxy.contracts as glxy_contracts
 from random import randint
 from resource_path import *
+from localise import l10n_convert
 
 class UI_Button():
     """
     Used to create simple buttons that can be blitted onto surfaces and interacted with accordingly
     """
 
-    def __init__(self, abs_pos, surface_pos, command, icon_surface, icon_toggled_surface = None): # the 
+    def __init__(self, abs_pos : tuple[int, int], surface_pos : tuple[int, int], command, icon_surface : p.Surface, icon_toggled_surface :p.Surface = None, name = ""):
         self.icon = icon_surface
+        self.name = name # used for changing things that you need to be in main to access (like changing a render state)
 
         if icon_toggled_surface != None:
             self.icon_alt = icon_toggled_surface
         else:
-            self.icon_alt = self.icon # if nothing is passed then that means this is obvs not a toggle button
+            self.icon_alt = self.icon # if nothing is passed then that means this is obvs not a toggle button / just doesnt have a second image to use
 
         self.alt_state = False # whether or not the button has been toggled on/off for rendering it
 
@@ -67,22 +70,24 @@ class Building_UI():
                 """
                 preloads the fonts and stores each one into the "pre_rendered_fonts"
                 """
-                print("loading fonts")
+                print("loading building tile fonts")
                 pre_rendered_fonts = {}
 
                 font_size = 20
                 initial_font = p.font.Font(resource_path("assets/Pixel.ttf"), font_size) # set the starting font (means the loop doesnt have to constantly load it)
                 for tile_id in building.tile_kinds:
                     tile = building.tile_kinds[tile_id]
-                    text_surface = p.Surface((tile.size[0] * 60, 60 ), flags=p.SRCALPHA) # dynamically size the surface based on the size of the icon
+                    text_surface = p.Surface(((tile.size[0] // tile.size[1]) * 60, 120), flags=p.SRCALPHA) # dynamically size the surface based on the size of the icon
                     text_surface.fill((0,0,0,0))
 
-                    part_name = tile.name
-                    pos = (5, 0) # where the text gets dumped onto the surface
+                    part_name = l10n_convert(tile.name)
+                    pos = (0, 0) # where the text gets dumped onto the surface - 25/11/26: Shouldnt this always be (0,0)????
                     name_font = initial_font
                     font_size = 20
 
-                    while name_font.size(part_name)[0] > 60: # this while loop resizes the font until it is a good size
+                    
+
+                    while name_font.size(part_name)[0] > text_surface.get_width(): # this while loop resizes the font until it is a good size
                         name_font = p.font.Font(resource_path("assets/Pixel.ttf"), font_size)
                         font_size -= 1
 
@@ -149,6 +154,9 @@ class Building_UI():
             screen.blit(gui_textures["Bld_Mass"], (5, 37))
             screen.blit(self.limit_font.render(f"{building.ship_mass} / {building.mass_limit}", True, font_colour), (37, 37))
 
+            screen.blit(gui_textures["Bld_Bulk"], (5, 69))
+            screen.blit(self.limit_font.render(f"{building.storage_bulk_level} / {building.storage_bulk_limit}", True, font_colour), (37, 69))
+
 
 
         def tile_carousel(self, gui_textures, tile_ghost_textures): # the bit at the bottom with all the tiles to choose from
@@ -199,7 +207,7 @@ class Building_UI():
 
                         carousel_surface.blit(tile_ghost_textures[tile.name], (x_pos, y_pos)) # blits the tiles icon to the carousel
 
-                        text_pos = (x_pos+4, y_pos + 80)
+                        text_pos = (x_pos - 2, y_pos + 80)
                         carousel_surface.blit(self.pre_rendered_fonts[tile.name], text_pos) # blits the name of the part/tile under the tiles icon
 
                         x_pos += (tile.size[0] * 64 * (1 / tile.size[1])) + self.element_data["tile_carousel"]["tile_padding"] # set x pos for NEXT tile
@@ -269,7 +277,8 @@ class Generic_UI():
     def __init__(self, gui_textures):
         self.changed_since_last_frame = True
 
-        self.buttons = [UI_Button((1880, 10), (10, 10), glxy_map.toggle_map, gui_textures["Gnrc_Map"])]
+        # UI buttons are 30x30, so with 10px padding, add 40 to the Y for every new button
+        self.buttons = [UI_Button((1880, 10), (10, 10), glxy_map.toggle_map, gui_textures["Gnrc_Map"]), UI_Button((1880, 50), (10, 50), glxy_stns.toggle_station_menu, gui_textures["Gnrc_Station"], name="station")]
 
         self.render_cache = p.surface.Surface((50, 150))
 
@@ -328,12 +337,13 @@ class Ticker():
         self.font_size = font_size
 
         def render_ticker(text):
-            surf_width = p.font.Font(resource_path("assets/Pixel.ttf"), self.font_size).render(text, False, (255, 255, 255)).get_width() + 10
+            l10n = l10n_convert(text)
+            surf_width = p.font.Font(resource_path("assets/Pixel.ttf"), self.font_size).size(l10n)[0] + 10
             
             surf = p.Surface((surf_width, self.font_size + 10), p.SRCALPHA)
 
             surf.fill((150, 2, 1, 100))
-            surf.blit(p.font.Font(resource_path("assets/Pixel.ttf"), self.font_size).render(text, False, (255, 255, 255)), (5, 5))
+            surf.blit(p.font.Font(resource_path("assets/Pixel.ttf"), self.font_size).render(l10n, False, (255, 255, 255)), (5, 5))
 
             return surf
 
@@ -401,7 +411,7 @@ class Galaxy_Map():
 
         self.render_cache = [
             p.surface.Surface((1920, 1080), p.SRCALPHA), # the actual map bit
-            p.surface.Surface((300, 250), p.SRCALPHA) # the connection information bit
+            p.surface.Surface((420, 200), p.SRCALPHA) # the connection information bit
             ]
         
         self.fonts = {
@@ -410,12 +420,12 @@ class Galaxy_Map():
             "info" : p.font.Font(resource_path("assets/Pixel.ttf"), 24)
         }
         
-        self.ticker = Ticker(31, 240, ["Not enough fuel!", "Not enough thrusters!", "Not engine power!", "Station too far!"])
+        self.ticker = Ticker(31, 240, ["#Ticker/galaxy_map_fuel", "#Ticker/galaxy_map_thrust", "#Ticker/galaxy_map_engine", "#Ticker/galaxy_map_far"])
 
 
     def render_info(self, active_camera):
         if self.info_changed_since_last_frame:
-            self.info_pos, thrt_lvl, kind, fuel, contract_count, name = glxy_map.gather_stats_for_info(p.mouse.get_pos(), active_camera)
+            self.info_pos, thrt_lvl, kind, fuel, contract_count, name = glxy_map.gather_stats_for_info(glxy_map.fetch_hovered_connection(p.mouse.get_pos(), active_camera))
 
             self.render_cache[1].fill((50, 40, 30)) # background
 
@@ -427,13 +437,13 @@ class Galaxy_Map():
             self.render_cache[1].blit(header_render, (3, 3))
 
             self.render_cache[1].blit(self.fonts["info"].render(fuel, True, (230,230,230)), (3, 45))
-            self.render_cache[1].blit(self.fonts["info"].render(kind, True, (230,230,230)), (3, 75))
+            self.render_cache[1].blit(self.fonts["info"].render(f"{l10n_convert('#Galaxy_Map_Info/kind')}{kind}", True, (230,230,230)), (3, 75))
             self.render_cache[1].blit(self.fonts["info"].render(contract_count, True, (230,230,230)), (3, 105))
 
 
-            self.render_cache[1].blit(self.fonts["info"].render("Threat Level: ", True, (230,230,230)), (3, 135))
+            self.render_cache[1].blit(self.fonts["info"].render(l10n_convert("#Galaxy_Map_Info/threat_level"), True, (230,230,230)), (3, 135))
 
-            bar_start = self.fonts["info"].render("Threat Level: ", True, (230,230,230)).get_width() + 4
+            bar_start = self.fonts["info"].render(l10n_convert("#Galaxy_Map_Info/threat_level"), True, (230,230,230)).get_width() + 4
             self.render_cache[1].fill((200, 190, 180), p.Rect((bar_start-1, 134), (102, 24 + 2)))
             self.render_cache[1].fill((10, 10, 10), p.Rect((bar_start, 135), (100, 24)))
             self.render_cache[1].fill((255, 60, 50), p.Rect((bar_start, 135), (thrt_lvl, 24)))
@@ -580,6 +590,37 @@ class Background():
 
 
 
+class Station():
+    def __init__(self, gui_images):
+        self.render_cache = p.surface.Surface(gui_images["Stn_Main"].get_size())
+        
+        self.header = p.font.Font(resource_path("assets/Pixel.ttf"), 40)
+        self.body = p.font.Font(resource_path("assets/Pixel.ttf"), 32)
+
+        self.changed_since_last_rendered = False
+    
+
+    def render(self, gui_images): 
+        if self.changed_since_last_rendered:
+            self.render_cache.blit(gui_images["Stn_Main"], (0,0))
+
+            pos, thrt_lvl, kind, fuel, contract_count, name = glxy_map.gather_stats_for_info(glxy_map.current_station)
+            colour = (27,33,13) # the dark green colour used everywhere
+
+            header_render = self.header.render(f"{name}// {kind}", False, colour)
+            self.render_cache.blit(header_render, (10,10))
+            p.draw.line(self.render_cache, colour, (10,48), (10+header_render.get_width(), 48), 2)
+            self.changed_since_last_rendered = False
+
+            # render each contract area
+            for i in range(len(glxy_stns.stations[glxy_map.current_station].attached_contracts)):
+                contract = glxy_contracts.active_contracts[glxy_stns.stations[glxy_map.current_station].attached_contracts[i]]
+                text = l10n_convert(str(glxy_contracts.possible_contracts[contract.contract_kind]["name"]))
+                contract_render = self.body.render(text, False, colour)
+                self.render_cache.blit(contract_render, (10,50 + i * 40))
+
+        return self.render_cache
+
 class Camera():
     def __init__(self):
         self.pos = [0,0]
@@ -619,11 +660,11 @@ class Camera():
             self.velocity[0] += x
             self.velocity[1] += y
         
-    def move_camera(self, renderer):
+    def move_camera(self, renderer, dt):
         keys = p.key.get_pressed()
 
-        self.pos[0] += self.velocity[0]
-        self.pos[1] += self.velocity[1]
+        self.pos[0] += self.velocity[0] * (1+dt)
+        self.pos[1] += self.velocity[1] * (1+dt)
 
         # camera drag
         if not (keys[p.K_a] or keys[p.K_d]):
@@ -656,9 +697,19 @@ class Camera():
     def shake_camera(self):
         if global_vars.camera_shake > 0:
             int_shk = int(global_vars.camera_shake*10)
-            self.accelerate_camera(randint(-int_shk, int_shk)/10, randint(-int_shk, int_shk)/10)
+
+            if global_vars.camera_shake_direction >= 0:
+                direction = 1
+            elif global_vars.camera_shake_direction > -4:
+                direction = -1
+            else:
+                global_vars.camera_shake_direction = 4
+                direction = -1
+            global_vars.camera_shake_direction-=1
+
+            self.accelerate_camera(randint(0, int_shk)/10*direction, randint(0, int_shk)/10*direction)
             global_vars.camera_shake = global_vars.camera_shake * 0.9
-        elif global_vars.camera_shake < 0.1:
+        elif abs(global_vars.camera_shake) < 0.1:
             global_vars.camera_shake = 0
 
 class Renderer():
@@ -679,15 +730,15 @@ class Renderer():
         print("Loading textures")
         try:
             self.tile_textures = {
-                "Floor" : p.image.load(resource_path("assets/textures/tiles/Empty_Floor.png")).convert(),
-                "Vent" : p.image.load(resource_path("assets/textures/tiles/Vent_Floor.png")).convert(),
-                "Engine" : p.image.load(resource_path("assets/textures/tiles/engine.png")).convert(),
-                "Pillar" : p.image.load(resource_path("assets/textures/tiles/wall_pillar.png")).convert(),
-                "Battery" : p.image.load(resource_path("assets/textures/tiles/Battery.png")).convert(),
-                "Reactor" : p.image.load(resource_path("assets/textures/tiles/Reactor.png")).convert(),
-                "Storage Box" : p.image.load(resource_path("assets/textures/tiles/Storage_Box.png")).convert(),
-                "Fuel Cell" : p.image.load(resource_path("assets/textures/tiles/Fuel_Cell.png")).convert(),
-                "Lil Thruster" : p.image.load(resource_path("assets/textures/tiles/Lil_Thruster.png")).convert()
+                "#Tiles/Floor" : p.image.load(resource_path("assets/textures/tiles/Empty_Floor.png")).convert(),
+                "#Tiles/Vent" : p.image.load(resource_path("assets/textures/tiles/Vent_Floor.png")).convert(),
+                "#Tiles/Engine" : p.image.load(resource_path("assets/textures/tiles/engine.png")).convert(),
+                "#Tiles/Pillar" : p.image.load(resource_path("assets/textures/tiles/wall_pillar.png")).convert(),
+                "#Tiles/Battery" : p.image.load(resource_path("assets/textures/tiles/Battery.png")).convert(),
+                "#Tiles/Reactor" : p.image.load(resource_path("assets/textures/tiles/Reactor.png")).convert(),
+                "#Tiles/Storage_Box" : p.image.load(resource_path("assets/textures/tiles/Storage_Box.png")).convert(),
+                "#Tiles/Fuel_Cell" : p.image.load(resource_path("assets/textures/tiles/Fuel_Cell.png")).convert(),
+                "#Tiles/Lil_Thruster" : p.image.load(resource_path("assets/textures/tiles/Lil_Thruster.png")).convert()
                 }
         except:
             raise BaseException("CRASSHHH, error trying to load the tiles textures.")
@@ -765,6 +816,7 @@ class Renderer():
                 "Bld_Save" : p.transform.scale(p.image.load(resource_path("assets/textures/UI/Building/Save.png")), (28, 28)).convert(),
                 "Bld_Engine" : p.transform.scale(p.image.load(resource_path("assets/textures/UI/Building/engine.png")), (30, 30)).convert_alpha(),
                 "Bld_Mass" : p.transform.scale(p.image.load(resource_path("assets/textures/UI/Building/mass.png")), (30, 30)).convert_alpha(),
+                "Bld_Bulk" : p.transform.scale(p.image.load(resource_path("assets/textures/UI/Building/bulk.png")), (30, 30)).convert_alpha(),
 
                 # pause menu GUI
                 "PM_Pause_Menu" : p.image.load(resource_path("assets/textures/UI/Pause Menu/Pause_Menu.png")).convert(),
@@ -773,9 +825,11 @@ class Renderer():
                 "PM_Load" : p.image.load(resource_path("assets/textures/UI/Pause Menu/Load.png")).convert(),
                 "PM_Settings" : p.image.load(resource_path("assets/textures/UI/Pause Menu/Settings.png")).convert(),
 
-                # Generic GUI
+                # Generic  - this is the stuff that's basically always there
                 "Gnrc_Box" : p.image.load(resource_path("assets/textures/UI/Generic/frame.png")).convert_alpha(),
                 "Gnrc_Map" : p.image.load(resource_path("assets/textures/UI/Generic/map.png")).convert(),
+                "Gnrc_Station" : p.image.load(resource_path("assets/textures/UI/Generic/station.png")).convert(),
+                
 
                 # Galaxy Map GUI
                 "Glxy_stn_off" : p.image.load(resource_path("assets/textures/UI/Galaxy Map/station_off.png")).convert_alpha(),
@@ -809,7 +863,9 @@ class Renderer():
 
         self.galaxy_map = Galaxy_Map()
 
-        self.main_ticker = Ticker(31, 240, ["Game saved!", "Game loaded!", "Load failed, no file found."])
+        self.main_ticker = Ticker(31, 240, ["#Ticker/main_save", "#Ticker/main_load_good", "#Ticker/main_load_bad"])
+
+        self.station = Station(self.gui_textures)
 
         # Small debug feature used to display the FPS and such
         self.debug_font = p.font.Font(resource_path("assets/Pixel.ttf"), 16)
@@ -850,14 +906,21 @@ class Renderer():
         self.screen.fill((0,0,0))
 
         self.active_camera.shake_camera()
-        self.active_camera.move_camera(self)
+        self.active_camera.move_camera(self, dt)
 
         if glxy_map.map_visible:
             self.galaxy_map_frame()
         else:
             self.standard_frame(build_mode)
 
+        if glxy_stns.station_menu_open:
+            self.screen.blit(self.station.render(self.gui_textures), (self.display_resolution[0]//2 - 400, self.display_resolution[1]//2 - 400))
+
         if pause_menu.paused: # pause menu should always be able to show up, and be on top
+            transparant_surf = p.Surface(self.display_resolution)
+            transparant_surf.fill((30,20,10))
+            transparant_surf.set_alpha(220)
+            self.screen.blit(transparant_surf, (0,0))
             self.screen.blit(self.pause_ui.render(self.gui_textures), (810, 240))
 
 
@@ -871,7 +934,7 @@ class Renderer():
         if pause_menu.typing_save_name:
             self.screen.blit(self.debug_font.render(("Typing save name..."), True, (0,255,0)), (10,250))
         
-        self.screen.blit(self.debug_font.render(("Pressing E allows you to spawn in fuel via the terminal/console btw"), True, (0,255,0)), (10,270))
+        self.screen.blit(self.debug_font.render(("E to spawn in fuel via the console"), True, (0,255,0)), (10,270))
 
 
         p.display.flip()

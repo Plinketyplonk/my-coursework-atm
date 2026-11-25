@@ -162,6 +162,8 @@ class Mouse_Events_Class():
             if mouse_pos[0] > 1880 and mouse_pos[1] < 120:
                 for button in renderer.generic_ui.buttons:
                     button_pressed = button.check_if_interacted(mouse_pos)
+                    if button_pressed and button.name == "station" and galaxy.stations.station_menu_open:
+                        renderer.station.changed_since_last_rendered = True
             
             if galaxy.galaxy_map.map_visible:
                 result = galaxy.galaxy_map.jump_to_new_station(mouse_pos, renderer.active_camera)
@@ -179,14 +181,14 @@ class Mouse_Events_Class():
                 if mouse_pos[1] > renderer.display_resolution[1] - renderer.building_ui.element_data["tile_carousel"]["height"]:
                     if not building.demo_mode and building.selected_tile != 0 and not building.multi_place: # cant discard of the "demo" tile, so force you to press the button to disable it instead, also made it so that holding shift means that you dont discard of it
                         sounds.sound.ui_sounds["bin_tile"].play()
-                        building.selected_tile = 0 # 0 is 'none'/empty tile
+                        building.selected_tile = 1 # 1 is 'none'/empty tile
                         building.multi_place = False
                 else:
                     if building.place_tile(mouse_pos, renderer.camera_main):
                         sounds.sound.ui_sounds["place_tile"].play()
 
                     if not (building.multi_place or building.demo_mode): # not holding shift to place multiple
-                        building.selected_tile = 0
+                        building.selected_tile = 1
 
                 building.drag_placing = False
                 renderer.building_ui.element_data["grid"]["moved_since_last_frame"] = True
@@ -194,7 +196,7 @@ class Mouse_Events_Class():
 
     def resolve_right_click_down(self):
         if building.build_mode: # right clicking cancels what ur doing
-            building.selected_tile = 0 # 0 is 'none'/empty tile
+            building.selected_tile = 1 # 1 is 'none'/empty tile
             building.multi_place = False
             building.drag_placing = False
             building.demo_mode = False
@@ -277,6 +279,7 @@ while running:
     #except Exception as e:
         #save_game.autosave(0, crash_exception=e, forced=True) # the game crashed, so save whatever the current state is rn as a seperate "crash_save" to try recover progress or at the least give the senario that the game crashed in
         #crashed = True
+        #running=False
         #p.event.post(p.QUIT)
 
 if not crashed:
